@@ -1,1 +1,1 @@
-class Note(var content: String)
+class Note(val title: String, val content: String)

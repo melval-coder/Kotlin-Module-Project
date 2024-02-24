@@ -52,7 +52,7 @@ class NotesApp {
     private fun showNoteMenu() {
         println("Список заметок в архиве '${archives[currentArchiveIndex].name}':")
         archives[currentArchiveIndex].notes.forEachIndexed { index, note ->
-            println("$index. Заметка ${index + 1}")
+            println("$index. ${note.title}")
         }
         println("${archives[currentArchiveIndex].notes.size}. Создать заметку")
         println("${archives[currentArchiveIndex].notes.size + 1}. Выход")
@@ -71,15 +71,22 @@ class NotesApp {
     }
 
     private fun createNote() {
-        print("введите текст новой заметки: ")
-        val noteContent = readLine().orEmpty().trim()
-        if (noteContent.isNotBlank()) {
-            val note = Note(noteContent)
-            archives[currentArchiveIndex].notes.add(note)
-            currentNoteIndex = archives[currentArchiveIndex].notes.lastIndex
-            showNoteContent()
+        print("Введите название новой заметки: ")
+        val noteTitle = readLine().orEmpty().trim()
+        if (noteTitle.isNotBlank()) {
+            print("Введите текст новой заметки: ")
+            val noteContent = readLine().orEmpty().trim()
+            if (noteContent.isNotBlank()) {
+                val note = Note(noteTitle, noteContent)
+                archives[currentArchiveIndex].notes.add(note)
+                currentNoteIndex = archives[currentArchiveIndex].notes.lastIndex
+                showNoteContent()
+            } else {
+                println("Текст заметки не может быть пустым. Пожалуйста, попробуйте еще раз.")
+                showNoteMenu()
+            }
         } else {
-            println("Текст заметки не может быть пустым. Пожалуйста, попробуйте еще раз.")
+            println("Название заметки не может быть пустым. Пожалуйста, попробуйте еще раз.")
             showNoteMenu()
         }
     }
@@ -106,10 +113,10 @@ class NotesApp {
     private fun getUserInput(): Int {
         print("выберите пункт: ")
         while (true) {
-            try {
-                val userInput = readLine()?.toIntOrNull() ?: continue
+            val userInput = readLine()?.takeIf { it.isNotEmpty() }?.toIntOrNull()
+            if (userInput != null) {
                 return userInput
-            } catch (ex: NumberFormatException) {
+            } else {
                 println("некорректный ввод. пожалуйста, выберите пункт из списка.")
             }
         }
